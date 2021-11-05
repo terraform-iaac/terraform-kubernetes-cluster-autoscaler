@@ -3,7 +3,7 @@ module "deploy" {
   version = "1.1.5"
 
   name          = var.app_name
-  namespace     =  var.create_namespace ? kubernetes_namespace.cluster_autoscaler[0].metadata[0].name : var.namespace
+  namespace     = var.create_namespace ? kubernetes_namespace.cluster_autoscaler[0].metadata[0].name : var.namespace
   image         = var.docker_image
   internal_port = var.service_ports
 
@@ -12,7 +12,7 @@ module "deploy" {
     "--cloud-provider=${var.cloud_provider}",
     "--namespace=${kubernetes_namespace.cluster_autoscaler.metadata[0].name}",
     "--node-group-auto-discovery=asg:tag=k8s.io/${var.app_name}/enabled,k8s.io/${var.app_name}/${var.cluster_name}",
-  ],var.additional_deployment_commands)
+  ], var.additional_deployment_commands)
 
   env = [
     {

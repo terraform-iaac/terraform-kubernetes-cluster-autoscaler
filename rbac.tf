@@ -150,9 +150,9 @@ resource "kubernetes_role" "cluster_autoscaler" {
   }
 
   rule {
-    api_groups     = [""]
-    resources      = ["configmaps"]
-    verbs          = ["create", "list", "watch"]
+    api_groups = [""]
+    resources  = ["configmaps"]
+    verbs      = ["create", "list", "watch"]
   }
   rule {
     api_groups     = [""]
