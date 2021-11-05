@@ -10,7 +10,7 @@ module "deploy" {
   command = concat([
     "./cluster-autoscaler",
     "--cloud-provider=${var.cloud_provider}",
-    "--namespace=${kubernetes_namespace.cluster_autoscaler.metadata[0].name}",
+    "--namespace=${kubernetes_namespace.cluster_autoscaler[0].metadata[0].name}",
     "--node-group-auto-discovery=asg:tag=k8s.io/${var.app_name}/enabled,k8s.io/${var.app_name}/${var.cluster_name}",
   ], var.additional_deployment_commands)
 
