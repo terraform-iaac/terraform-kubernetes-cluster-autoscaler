@@ -5,14 +5,6 @@ Terraform module for deploy Cluster Autoscaler for AWS EKS to your kubernetes cl
 ## Wokrflow
 
 This module creates all necessary resources for deploy AWS Cluster Autoscale inside your kubernetes cluster. It helps you to manage your EKS cluster node size (as EC2 Auto Scaling Group) based on internal kubernetes metrics.
-Also, optional (default ***false***), you can enable instance autoscaling using prometheus metrics.
-
-## Software Requirements
-
-Name | Description
---- | --- |
-Terraform | >= 0.14.9
-Kubernetes provider | >= 1.11.1
 
 ## Usage
 
@@ -26,19 +18,24 @@ module "cluster_autoscaler" {
   // Optional
   resources = {
     request_cpu    = "150m"
-    request_memory = "600Mi"
+    request_memory = "70Mi"
   }
 }
 ```
-### Note: If you want to use other metrics, please set 'service_monitor_enable' to true and set namespace where your monitoring system deployed:
 
+## AWS Auto Scaling Group TAGs requirements
+Please add next aws tags to your Auto Scaling Group 
+
+    k8s.io/cluster-autoscaler/enabled = true
+    k8s.io/cluster-autoscaler/CLUSTER_NAME = true
+
+### You can add additional Cluster Autoscaler container arguments via `additional_deployment_commands`. See all possible args in official [Cluster Autoscaler docs](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md#what-are-the-parameters-to-ca):
      additional_deployment_commands = [
         "--balance-similar-node-groups=true",
         "--skip-nodes-with-local-storage=false"
      ]
 
-### You can add additional Cluster Autoscaler container arguments via 'additional_deployment_commands'. See all possible args in official [Cluster Autoscaler docs](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md#what-are-the-parameters-to-ca):
-
+### NOTE: If you want to use other metrics, please set 'service_monitor_enable' to true and set namespace where your monitoring system deployed:
      service_monitor_enable = true
      metrics_namespace      = "monitoring-prometheus"
 
@@ -55,7 +52,8 @@ create_namespace | Create namespace by module ? true or false | `bool` | `true` 
 cluster_name | EKS cluster name | `string` | n/a | `my-EKS-cluste-name` | yes
 node_selector | Choose node where you want to deploy Cluster Autoscaler | `map(string)` | `null` | <pre>{<br>   spot_node_pool    = true<br>   service_node_pool = false<br>}</pre> | no
 service_monitor_enable | Enable Service Monitor? If true set variable 'metrics_namespace' | `bool` | `false` | n/a | no |
-metrics_namespace |Namespace where metrics collector (such as Prometheus) deployed | `string` | `null` | `monitoring` | no
+metrics_namespace | Namespace where metrics collector (such as Prometheus) is deployed | `string` | `null` | `monitoring` | no
+prometheus_release_label | Prometheus release label ( typically name of helm chart ) | `string` | `kube-prometheus-stack` | `kube-prometheus-stack` | no
 rbac_psp_enable | Enable Pod Security Policies (PSP) | `bool` | `false` | n/a | no
 docker_image | Image for cluster autoscaler | `string` | `k8s.gcr.io/autoscaling/cluster-autoscaler:v1.21.1` | n/a | no
 additional_deployment_commands | Your additional args to Cluster Autoscaler deployment | `list(string)` | `[]` | <pre>[<br>   "--balance-similar-node-groups=true",<br>   "--skip-nodes-with-local-storage=false"<br>]</pre>  | no
@@ -69,3 +67,9 @@ name | Name of Cluster Autoscaler
 namespace | Name of namespace where Cluster Autoscaler deployed
 service_account_name | Name of Cluster Autoscaler service account
 
+## Software Requirements
+
+Name | Description
+--- | --- |
+Terraform | >= 0.14.9
+Kubernetes provider | >= 2.6.1

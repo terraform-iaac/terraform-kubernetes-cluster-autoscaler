@@ -38,8 +38,13 @@ variable "service_monitor_enable" {
   default     = false
 }
 variable "metrics_namespace" {
-  description = "Namespace where metrics collector (such as Prometheus) deployed"
+  description = "Namespace where metrics collector (such as Prometheus) is deployed"
   default     = null
+}
+variable "prometheus_release_label" {
+  description = "Prometheus release label ( typically name of helm chart )"
+  type        = string
+  default     = "kube-prometheus-stack"
 }
 variable "rbac_psp_enable" {
   description = "Enable Pod Security Policies (PSP)"
@@ -47,9 +52,13 @@ variable "rbac_psp_enable" {
   default     = false
 }
 
-variable "docker_image" {
-  description = "Image for cluster autoscaler"
-  default     = "k8s.gcr.io/autoscaling/cluster-autoscaler:v1.21.1"
+variable "docker_image_registry" {
+  description = "Image registry for cluster autoscaler"
+  default     = "k8s.gcr.io/autoscaling/cluster-autoscaler"
+}
+variable "docker_image_tag" {
+  description = "Image tag for cluster autoscaler"
+  default     = "v1.21.1"
 }
 variable "additional_deployment_commands" {
   type        = list(string)

@@ -4,7 +4,7 @@ module "deploy" {
 
   name          = var.app_name
   namespace     = var.create_namespace ? kubernetes_namespace.cluster_autoscaler[0].metadata[0].name : var.namespace
-  image         = var.docker_image
+  image         = "${var.docker_image_registry}:${var.docker_image_tag}"
   internal_port = var.service_ports
 
   command = concat([
@@ -40,4 +40,16 @@ module "deploy" {
   ]
 
   node_selector = var.node_selector
+}
+
+module "service" {
+  count = var.service_monitor_enable ? 1 : 0
+
+  source  = "terraform-iaac/service/kubernetes"
+  version = "1.0.3"
+
+  app_name      = module.deploy.name
+  app_namespace = var.create_namespace ? kubernetes_namespace.cluster_autoscaler[0].metadata[0].name : var.namespace
+
+  port_mapping = var.service_ports
 }
